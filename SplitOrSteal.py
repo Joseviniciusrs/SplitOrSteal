@@ -5,6 +5,7 @@ from itertools import permutations, combinations
 import simple_opponents
 import your_agent
 import rl_agent
+import matplotlib as plt
 
 # Initialize Pygame
 pygame.init()
@@ -80,7 +81,7 @@ class Game:
             right_reward = 0   
         elif right_decision == 'steal':
             right_reward = self.current_amount 
-            left_reward = 0
+            left_reward = 0;
             
         print(f"Agent {left_agent.name} won {left_reward:.2f}"
               f" vs Agent {right_agent.name} won {right_reward:.2f}")            
@@ -134,7 +135,7 @@ class Player:
         self.total_amount = 0
         self.last_decision = "none"
         self.karma = 0
-        
+    
     def reset_karma(self):
       self.karma = 0
           
@@ -205,7 +206,7 @@ def play_round(game, agent1, agent2, remaining):
   screen.fill(BLACK)
   screen.blit(background_image, (0, 0))
   game.prepare_round()
-  game.preround_render();
+  game.preround_render()
   agent1.preround_render(50, 50)
   agent2.preround_render(550, 50)        
 
@@ -229,7 +230,7 @@ def play_round(game, agent1, agent2, remaining):
   screen.blit(background_image, (0, 0))    
   agent1.render(50, 50)
   agent2.render(550, 50)
-  game.render();
+  game.render()
 
  # Update the screen
   pygame.display.flip()
@@ -244,28 +245,28 @@ agent3 = Player(simple_opponents.Randy())
 agent4 = Player(simple_opponents.Karmine())
 agent5 = Player(simple_opponents.Opportunist())
 agent6 = Player(simple_opponents.Pretender())
-agent_tittat = Player(your_agent.ReinforcementLearningAgent())
+agent_tittat = Player(your_agent.AgentQ(memory=0))
 
 # Allgame
-#agents = [agent1, agent2, agent3, agent4, agent5, agent6, ]
+agents = [agent1, agent2, agent3, agent4, agent5, agent6, agent_tittat]
 
 # Simple
-#agents = [Player(simple_opponents.Karmine()),  Player(simple_opponents.Karmine()), Player(rl_agent.RLAgent()), agent_tittat]
+agents = [Player(simple_opponents.Karmine()),  Player(simple_opponents.Karmine()), Player(rl_agent.RLAgent()), agent_tittat]
 
 # Difficult 
-# agents = [Player(your_agent.ReinforcementLearningAgent()), Player(your_agent.ReinforcementLearningAgent()), Player(rl_agent.RLAgent()), Player(your_agent.ReinforcementLearningAgent())]
+agents = [Player(your_agent.AgentQ(0)), Player(your_agent.AgentQ(0)), Player(rl_agent.RLAgent()), Player(your_agent.AgentQ(0))]
 
 # Very difficult
-# agents = [Player(simple_opponents.Pretender()), Player(simple_opponents.Pretender()), Player(rl_agent.RLAgent()), Player(simple_opponents.Karmine())]
+agents = [Player(simple_opponents.Pretender()), Player(simple_opponents.Pretender()), Player(rl_agent.RLAgent()), Player(simple_opponents.Karmine())]
 
 # Karma-aware
 agents = [Player(simple_opponents.Karmine()), Player(simple_opponents.Karmine()), Player(rl_agent.RLAgent()), Player(simple_opponents.Stealer())]
 
 # Opportunists
-# agents = [Player(simple_opponents.Opportunist()),Player(simple_opponents.Opportunist()), Player(rl_agent.RLAgent()), agent_tittat]
+agents = [Player(simple_opponents.Opportunist()),Player(simple_opponents.Opportunist()), Player(rl_agent.RLAgent()), agent_tittat]
 
 # 3 Karmines
-# agents = [Player(simple_opponents.Karmine()),  Player(simple_opponents.Karmine()), Player(rl_agent.RLAgent()), Player(simple_opponents.Karmine())]
+agents = [Player(simple_opponents.Karmine()),  Player(simple_opponents.Karmine()), Player(rl_agent.RLAgent()), Player(simple_opponents.Karmine())]
 
 nrematches = 10 # Could vary
 nfullrounds = 100 # How many full cycles
@@ -299,3 +300,33 @@ for a in agents:
 print(f"Vencedor: {best.name}")
 print(f"Score: {max_score:.2f}")
 
+
+# Não tá funcionando, mas era a ideia de colocar os gráficos de desempenho
+
+# List to store performance data for each agent
+agent_performance = []
+
+# Simulate the game for each agent
+agent_performance = [] # initialize an empty list to store performance of each agent
+for agent in agents:
+    agent_rewards = []
+    for rematch in range(nrematches):
+        for round in range(nfullrounds):
+            
+            total_amount, rounds_left, your_karma, his_karma = max_score
+            action = agent(total_amount, rounds_left, your_karma, his_karma) # call agent function to take action
+            reward = (action) # calculate reward based on the action taken
+            agent_rewards.append(reward)
+    agent_performance.append(agent_rewards) # append the rewards achieved by the agent in all rematches and all full rounds
+
+# Plot performance graphs for each agent
+for i, agent_rewards in enumerate(agent_performance):
+    agent_label = f"Agent {i+1}"
+    plt.plot(agent_rewards, label=agent_label)
+
+plt.xlabel('Rounds')
+plt.ylabel('Rewards')
+plt.title('Performance of Agents')
+plt.legend()
+
+plt.show()
