@@ -304,29 +304,29 @@ print(f"Score: {max_score:.2f}")
 # Não tá funcionando, mas era a ideia de colocar os gráficos de desempenho
 
 # List to store performance data for each agent
-agent_performance = []
+# agent_performance = []
 
-# Simulate the game for each agent
-agent_performance = [] # initialize an empty list to store performance of each agent
-for agent in agents:
-    agent_rewards = []
-    for rematch in range(nrematches):
-        for round in range(nfullrounds):
+# # Simulate the game for each agent
+# agent_performance = [] # initialize an empty list to store performance of each agent
+# for agent in agents:
+#     agent_rewards = []
+#     for rematch in range(nrematches):
+#         for round in range(nfullrounds):
             
-            total_amount, rounds_left, your_karma, his_karma = max_score
-            action = agent(total_amount, rounds_left, your_karma, his_karma) # call agent function to take action
-            reward = (action) # calculate reward based on the action taken
-            agent_rewards.append(reward)
-    agent_performance.append(agent_rewards) # append the rewards achieved by the agent in all rematches and all full rounds
+#             total_amount, rounds_left, your_karma, his_karma = max_score
+#             action = agent(total_amount, rounds_left, your_karma, his_karma) # call agent function to take action
+#             reward = (action) # calculate reward based on the action taken
+#             agent_rewards.append(reward)
+#     agent_performance.append(agent_rewards) # append the rewards achieved by the agent in all rematches and all full rounds
 
-# Plot performance graphs for each agent
-for i, agent_rewards in enumerate(agent_performance):
-    agent_label = f"Agent {i+1}"
-    plt.plot(agent_rewards, label=agent_label)
+# # Plot performance graphs for each agent
+# for i, agent_rewards in enumerate(agent_performance):
+#     agent_label = f"Agent {i+1}"
+#     plt.plot(agent_rewards, label=agent_label)
 
-plt.xlabel('Rounds')
-plt.ylabel('Rewards')
-plt.title('Performance of Agents')
-plt.legend()
+# plt.xlabel('Rounds')
+# plt.ylabel('Rewards')
+# plt.title('Performance of Agents')
+# plt.legend()
 
-plt.show()
+# plt.show()
