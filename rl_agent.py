@@ -1,9 +1,3 @@
-reward_matrix = [[[1, 1], # Both players split
-                [0, -1], # Player 1 splits, player 2 steals
-                [2, 0], # Player 1 steals, player 2 splits
-                [0, 0]]] # Both players steal
-
-
 import random
 from collections import defaultdict
 import numpy as np
@@ -42,13 +36,13 @@ class RLAgent:
     return action
     
     
-  def update_qtable(self, state, action, reward1, reward2, next_state):
+  def update_qtable(self, state, action, reward, next_state):
     alp = self.alpha
     gam = self.gamma
     action_index = self.action_list.index(action)
     state = self.extract_rl_state(state)
     next_state = self.extract_rl_state(next_state)
-    self.Q[state][action_index] = (1 - alp) * self.Q[state][action_index] + alp * (reward1 + reward2 + gam * np.max(self.Q[next_state]))  
+    self.Q[state][action_index] = (1 - alp) * self.Q[state][action_index] + alp * (reward + gam * np.max(self.Q[next_state]))  
     
   # Nome de seu agente deve ser colocado aqui  
   def get_name(self):
@@ -68,7 +62,7 @@ class RLAgent:
     return self.choose_action(self.current_input)
 
   # Receba as acoes de cada agente e o reward obtido (vs total possivel)
-  def result(self, your_action, his_action, total_possible, reward1, reward2):
+  def result(self, your_action, his_action, total_possible, reward):
     if self.last_round:
       print("Forgetting last opponent action") # Vamos mudar de agente
       self.last_opponent_action = None
@@ -76,35 +70,13 @@ class RLAgent:
       self.last_opponent_action = his_action
       print(f"For {self.get_name()=} {self.last_opponent_action=} ")   
     
-    # if your_action == "steal" and his_action == "steal": 
-    #   reward = +0
-    # elif your_action == "steal" and his_action == "split":
-    #   reward = +2
-    # elif your_action == "split" and his_action == "split":
-    #   reward = +1
-    # elif your_action == "split" and his_action == "steal":
-    #   reward = -1
-    # self.current_output = (your_action, his_action, total_possible, reward )
+    if your_action == "steal" and his_action == "steal": 
+      reward = +0
+    elif your_action == "steal" and his_action == "split":
+      reward = +2
+    elif your_action == "split" and his_action == "split":
+      reward = +1
+    elif your_action == "split" and his_action == "steal":
+      reward = -1
+    self.current_output = (your_action, his_action, total_possible, reward )
     
-
-
-    if your_action == 0 and his_action == 0: # Both players cooperate
-            reward1 = reward_matrix[0][0][0]
-            reward2 = reward_matrix[0][0][1]
-    elif your_action == 0 and his_action == 1: # Only player 2 steals
-             reward1 = reward_matrix[0][1][0]
-             reward2 = reward_matrix[0][1][1]
-    elif your_action == 1 and his_action == 0: # Only player 1 steals
-             reward1 = reward_matrix[0][2][0]
-             reward2 = reward_matrix[0][2][1]
-    elif your_action == 1 and his_action == 1: # Both players steal
-             reward1 = reward_matrix[0][3][0]
-             reward2 = reward_matrix[0][3][1]
-
-    total_reward1 = reward1
-    total_reward2 = reward2
-
-    self.current_output = (your_action, his_action, total_possible, reward1, reward2 )
-
-
-
